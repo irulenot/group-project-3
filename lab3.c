@@ -1,6 +1,8 @@
 // Anthony Bilic 20514128
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define PT_SIZE 8
 #define MAIN_MEM_SIZE 8
@@ -26,8 +28,11 @@ int showptable();
 int quit();
 
 void handle_pf();
-int handle_input(char** input_p);
-void free_mem(char** input_p);
+void parse_input(char* input, int** input_p);
+int handle_input(int** input_p);
+
+void prep_input_p(int** input_p);
+void free_mem(int** input_p);
 
 int main(int argc, const char * argv[])
 {
@@ -37,58 +42,48 @@ int main(int argc, const char * argv[])
 	int disk_mem[DISK_MEM_SIZE];
 	initalize_mem(pt, pte, main_mem, disk_mem);
 
-	// This will go in while loop later, once we're done testing
-	/*
-	char* input = "read 4";
-	char* input_p[MAX_INPUTS];
-	handle_input(input_p, input);
-	free_mem(input_p);
-	*/	
-
-	/*
+	// Testing input from file
 	FILE *file;
- 	char *filename = "t_simple.txt";
+	char *filename = "t_simple.txt";
 	file = fopen(filename,"r");
-	
-	fclose(file);	
-	*/
 
-	// ==============================================================	
-	/* Can substitute manual input with input from test files for now
+	char input[50];
+	while(fgets(input, 50, file) != NULL)
+	{
+		int* input_p[MAX_INPUTS];
+		prep_input_p(input_p);
+
+		parse_input(input, input_p);
+		handle_input(input_p);
+		free_mem(input_p);
+	}
+	fclose(file);	
+
+// ==============================================================	
+/* Unfinished manual input, to be used later when done testing	   
+	
 	int running = 1;
 	while(running)
 	{
-		running = quit();
+		printf("$ ");
+		int* input_p[MAX_INPUTS];
+		prep_input_p(input_p);
+
+		parse_input(input, input_p);
+		running = handle_input(input_p);
+		free_mem(input_p);
+		printf("\n");
 	}
-	*/
-	
+
+*/	
+
 	return 0;
 }
 
-void free_mem(char** input_p)
+int handle_input(int** input_p)
 {
-	int i;
-	for(i=0; i < MAX_INPUTS;i++)
-		free(input_p[i]);
-}
 
-void parse_input(char** input_p, char* input)
-{
-	/*char* temp = strtok(input, " \n");
-	while (temp != NULL)
-	{
-		input_p[numbersIndex] = (int*) malloc(sizeof(int));
-		*numbers[numbersIndex] = (int) strtol(tempStr, NULL, 10);
-		temp = strtok(NULL, " \n");
-		numbersIndex++;
-	}
-	*/
-}
 
-int handle_input(char** input_p)
-{
-	
-	
 	//if(input_p[0] == "read")
 } 
 
@@ -142,6 +137,54 @@ int showptable()
 int quit()
 {
 	return 0;
+}
+
+void prep_input_p(int** input_p)
+{
+	int i;
+	for(i=0; i<MAX_INPUTS; i++)
+	{
+		input_p[i] = (int*) malloc(sizeof(int));
+		*input_p[i] = -1;
+	}
+}
+
+void free_mem(int** input_p)
+{
+	int i;
+	for(i=0; i < MAX_INPUTS;i++)
+		free(input_p[i]);
+}
+
+void parse_input(char* input, int** input_p)
+{
+	int i = 0;
+	char str[50];
+	strcpy(str, input);
+	char* temp = strtok(str, " \n");
+	while (temp != NULL)
+	{
+		*input_p[i] = (int) convert_string(temp);
+		temp = strtok(NULL, " \n");
+		i++;
+	}
+}
+
+int convert_string(char* temp)
+{
+	if(!strcmp(temp, "read"))
+		return 0;
+	if(!strcmp(temp, "write"))
+		return 1;
+	if(!strcmp(temp, "showmain"))
+		return 2;
+	if(!strcmp(temp, "showdisk"))
+		return 3;
+	if(!strcmp(temp, "showptable"))
+		return 4;
+	if(!strcmp(temp, "quit"))
+		return 5;
+	return (int) atol(temp);
 }
 
 void initalize_mem(int* pt, pte_struct* pte, int* main_mem, int* disk_mem)
