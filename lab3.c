@@ -1,17 +1,18 @@
 // Anthony Bilic 20514128
+// Minh Vu 28602763
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define PT_SIZE 8
+#define PT_SIZE 16
 #define MAIN_MEM_SIZE 8
 #define DISK_MEM_SIZE 16
 #define PAGE_SIZE 2
 #define MAX_INPUTS 3
 
 typedef struct pte_struct {
-	int entry;
+	int entry; //virtual address
 	int valid; //1 if in main_mem, 0 is on disk_mem
 	int dirty;
 	int page;
@@ -36,10 +37,9 @@ void free_mem(int** input_p);
 
 int main(int argc, const char * argv[])
 {
-	int pt[PT_SIZE];
-	pte_struct pte[PT_SIZE];
-	int main_mem[MAIN_MEM_SIZE];
-	int disk_mem[DISK_MEM_SIZE];
+	pte_struct pte[PT_SIZE]; //metadeta
+	int main_mem[MAIN_MEM_SIZE]; //index = main memory address, data = contents of the array
+	int disk_mem[DISK_MEM_SIZE]; //disk memory
 	initalize_mem(pt, pte, main_mem, disk_mem);
 
 	// Testing input from file
@@ -87,10 +87,14 @@ int handle_input(int** input_p)
 	//if(input_p[0] == "read")
 } 
 
-int read(int va)
+int read(int va) //
 {
 	printf("read %i\n", va);
 	//Check if va in main_mem
+	if (pte[va].valid == 1) { //in main memory
+		main_mem[va] == disk_mem[va];
+	}
+	
 	//If true: read the data
 	//If false: page fault
 	//	Then read the data
@@ -194,12 +198,17 @@ void initalize_mem(int* pt, pte_struct* pte, int* main_mem, int* disk_mem)
 	fill_array(disk_mem, DISK_MEM_SIZE, -1);
 
 	int i;
+	int counter = 0;
 	for(i = 0; i < PT_SIZE; i++)
 	{
 		pte[i].entry = i;
 		pte[i].valid = 0;
 		pte[i].dirty = 0;
-		pte[i].page = i;
+		pte[i].page = counter;
+		
+		if (i%2 !=0) { //if i is odd
+		counter++;
+		}
 	}
 }
 
