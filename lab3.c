@@ -37,6 +37,7 @@ int handle_input(int** input_p);
 void prep_input_p(int** input_p);
 void parse_input(char* input, int** input_p);
 int convert_string(char* temp);
+void update_order(int main_page);
 
 void free_mem(int** input_p);
 
@@ -46,10 +47,10 @@ int disk_mem[DISK_MEM_SIZE];
 int use_order[MAIN_PAGE_COUNT]; //New global var, keeps track of use order
 
 // 4 different kinds of addresses
-// va = disk_addr = disk_mem[i/2 + 1(if odd number)]
-// disk_page = disk_mem[i]
-// main_page = main_mem[i]
-// pa = main_addr = main_mem[i/2 + 1(if odd number)]
+// va = disk_addr = disk_mem[i]
+// disk_page = disk_mem[i/2]
+// main_page = main_mem[i/2]
+// pa = main_addr = main_mem[i]
 
 int main(int argc, const char * argv[])
 {
@@ -132,6 +133,8 @@ int read(int va) //virtual address are converted to physical addresses | phys ad
 	 //page fault
 	 //handle_pf();
 	}
+
+	update_order(main_page); //main_page is the one being affected
 	*/
 
 	//If true: read the data
@@ -163,6 +166,8 @@ int write(int va, int n)
 	pte[va].valid = 1;
 	pte[va].dirty = 1;
 	pte[va].page_num = va/2;
+
+	update_order(va/2) = ;
 	*/
 
 	return 1;
@@ -245,6 +250,15 @@ int handle_pf(int va)
 	pte[disk_page].page_number = main_page;
 
 	return main_page;
+}
+
+void update_order(int main_page)
+{
+	use_order[main_page] = 0;
+	int i;	
+	for(i=0; i<MAIN_PAGE_COUNT; i++)
+		if(i != main_page)
+			use_order[i] = use_order[i] + 1;
 }
 
 // Returns index of pte of to be freed (refer to that pte's page_num for the main_mem page) (Not tested)
