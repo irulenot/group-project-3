@@ -12,10 +12,10 @@
 #define MAIN_PAGE_COUNT 4
 
 typedef struct {
-	int entry; //page in disk_mem (not index!)
-	int valid; //1 if in main_mem, 0 is on disk_mem
-	int dirty; //1 if newer data in main_mem than disk_mem
-	int page_number; //page in main_mem (not index!)
+	int entry;
+	int valid;
+	int dirty;
+	int page_number;
 } pte_struct;
 
 void initalize_mem();
@@ -44,7 +44,7 @@ void free_mem(int** input_p);
 pte_struct pte[PT_SIZE];
 int main_mem[MAIN_MEM_SIZE]; 
 int disk_mem[DISK_MEM_SIZE];
-int use_order[MAIN_PAGE_COUNT]; //New global var, keeps track of use order
+int use_order[MAIN_PAGE_COUNT];
 
 // 4 different kinds of addresses
 // va = disk_addr = disk_mem[i]
@@ -58,7 +58,7 @@ int main(int argc, const char * argv[])
 
 	// Testing input from file
 	FILE *file;
-	char *filename = "t_simple.txt";
+	char *filename = "t1.txt";
 	file = fopen(filename,"r");
 
 	char input[50];
@@ -73,23 +73,23 @@ int main(int argc, const char * argv[])
 	}
 	fclose(file);	
 
-// ==============================================================	
-/* Unfinished manual input, to be used later when done testing	   
-	
-	int running = 1;
-	while(running)
-	{
-		printf("$ ");
-		int* input_p[MAX_INPUTS];
-		prep_input_p(input_p);
+	// ==============================================================	
+	/* Unfinished manual input, to be used later when done testing	   
 
-		parse_input(input, input_p);
-		running = handle_input(input_p);
-		free_mem(input_p);
-		printf("\n");
-	}
+	   int running = 1;
+	   while(running)
+	   {
+	   printf("$ ");
+	   int* input_p[MAX_INPUTS];
+	   prep_input_p(input_p);
 
-*/	
+	   parse_input(input, input_p);
+	   running = handle_input(input_p);
+	   free_mem(input_p);
+	   printf("\n");
+	   }
+
+	 */	
 
 	return 0;
 }
@@ -111,14 +111,12 @@ int handle_input(int** input_p)
 
 int read(int va)
 {
-	printf("read %i\n", va);
-	
 	int main_page = -1;
 	if (pte[va/2].valid == 1)
 		main_page = pte[va/2].page_number;
 	else
-	 	main_page = handle_pf(va);
-	
+		main_page = handle_pf(va);
+
 	int main_addr = main_page*2;
 	if(va%2==1)
 		main_addr++;	
@@ -128,15 +126,14 @@ int read(int va)
 	return 1;
 }
 
-// Moves va page to main_mem and writes n to it (IN PROGRESS)
 int write(int va, int n)
 {
-	printf("write %i %i", va, n);
+	printf("Wrote %i to  %i\n", va, n);
 	int free_page = find_free_page();
 	if(free_page != -1)
 		free_page = handle_pf(va);
 	int free_addr = free_page*2;
-	
+
 	if(va%2==1)
 		main_mem[free_addr+1] = n;
 	else
@@ -175,25 +172,7 @@ int find_free_page()
 	return -1;
 }
 
-// Don't think we actually need this, however if you're going to use it in your code go for it
-int va_to_pa(int va) //only valid values for pa are 0-7
-{
-	/*
-	int vpage = va/2;
-	pte_struct vpageEntry = pte[vpage];
-	vpageEntry.valid = 1;//DELETE LATER FOR DEBUGGING PURPOSES---------------------
-	if (vpageEntry.valid == 0) {
-		//handle_pf(vpageEntry);
-		return -1; //temporary
-	}
-	
-	int ppage = vpageEntry.page;
-	int pa = (ppage*2 + (va % 2));
-	*/
-	return 1; // pa
-}
-
-// Returns freed page number in main_mem (Not tested)
+// Returns freed page number in main_mem
 int handle_pf(int va)
 {
 	int victim_pte = -1;
@@ -251,49 +230,50 @@ int find_victim()
 		if(pte[i].page_number == lowest_page)
 			return i; 
 
-	printf("Error: find_victim (Not necessarily function itself)\n");
+	printf("Error: find_victim\n");
 	return -1;
 }
 
 int showmain(int page_num)
 {
-	   int i = page_num*2;
-	   printf("Address   Contents\n");
-	   printf("%d   %d\n", i, disk_mem[i]);
-	   printf("%d   %d\n", i+1, disk_mem[i+1]);
+	int i = page_num*2;
+	printf("Address  Contents\n");
+	printf("%d       %d\n", i, main_mem[i]);
+	printf("%d       %d\n", i+1, main_mem[i+1]);
 	return 1;
 }
 
 int showdisk(int page_num)
 {
-	   int i = page_num*2;
-	   printf("Address   Contents\n");
-	   printf("%d   %d\n", i, disk_mem[i]);
-	   printf("%d   %d\n", i+1, disk_mem[i+1]);
+	int i = page_num*2;
+	printf("Address  Contents\n");
+	printf("%d       %d\n", i, disk_mem[i]);
+	printf("%d       %d\n", i+1, disk_mem[i+1]);
 	return 1;
 }
 
 int showptable()
 {
+	printf("VPageNum Valid Dirty PN\n");
+
 	int i;
 	for(i=0; i<PT_SIZE; i++)
 	{
-		printf("%i\n", pte[i].entry);
-		printf("%i\n", pte[i].valid);
-		printf("%i\n", pte[i].dirty);
+		printf("%i        ", pte[i].entry);
+		printf("%i     ", pte[i].valid);
+		printf("%i     ", pte[i].dirty);
 		printf("%i\n", pte[i].page_number);	
 	}
 	return 1;
 }
 
-// ===================== FINISHED ====================
-
 int quit()
 {
-	printf("quit\n");
+	printf("Quitting\n");
 	return 0;
 }
 
+// ======================= FINISHED ========================
 void prep_input_p(int** input_p)
 {
 	int i;
