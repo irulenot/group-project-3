@@ -29,7 +29,7 @@ int showptable();
 int quit();
 
 void handle_pf();
-void va_to_pa(int va);
+int va_to_pa(int va);
 
 int handle_input(int** input_p);
 void prep_input_p(int** input_p);
@@ -98,8 +98,12 @@ int handle_input(int** input_p)
 	return quit();
 } 
 
-int read(int va) //virtual address are converted to physical addresses | phys addresses are indexes in main_mem array disk addresses are indexes in disk array
+int read(int va) //virtual address are converted to physical addresses | phys addresses are indexes in main_mem array | disk addresses are indexes in disk array
 {
+	
+	int pa = va_to_pa(va);
+	printf("Virtual address: \n", va);
+	printf("Physical address: \n", va);
 	/*
 	int virtualPageNum = va >> 1;
 	int offset = va % 2;
@@ -136,7 +140,7 @@ int write(int va, int n)
 	return 1;
 }
 
-void va_to_pa(int va)
+int va_to_pa(int va)
 {
 	int vpage = va/2;
 	pte_struct vpageEntry = pte[vpage];
@@ -144,7 +148,7 @@ void va_to_pa(int va)
 		handle_pf();
 	}
 	int ppage = vpageEntry.page;
-	int pa = ppage*2 + (va % 2);
+	return (ppage*2 + (va % 2));
 }
 
 void handle_pf()
