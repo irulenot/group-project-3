@@ -103,22 +103,15 @@ int read(int va) //virtual address are converted to physical addresses | phys ad
 {
 	
 	int pa = va_to_pa(va);
-	printf("Virtual address: %i\n", va);
-	printf("Physical address: %i\n", va);
-	/*
-	int virtualPageNum = va >> 1;
-	int offset = va % 2;
-	int pageNum;
-	if (var%2==0) {
-		pageNum = var/2;
-	}
-	else {
-		pageNum = (var-1)/2;
-	}
-	int physAddr = pageNum*2 + offset;
+	printf("Virtual address: %d\n", va);
+	printf("Physical address: %d\n", pa);
+
+	int virtualPageNum = va >> 1; //used to index the page table
 	
-	if (pte[pageNum].valid == 1) { //page in main memory
-		return main_mem[physAddr]; //read the data
+	if (pte[virtualPageNum].valid == 1) { //page in main memory
+		printf("Address: \n"); // print----------------------------
+		printf("Content: %d\n", main_mem[pa]);
+		return main_mem[pa]; //read the data
 	}
 	else {//page in disk memory
 	 //page fault
@@ -130,7 +123,6 @@ int read(int va) //virtual address are converted to physical addresses | phys ad
 	//If true: read the data
 	//If false: page fault
 	//	Then read the data
-	*/
 	return 1;
 }
 
@@ -171,15 +163,19 @@ int find_free_page()
 	return -1;
 }
 
-int va_to_pa(int va)
+int va_to_pa(int va) //only valid values for pa are 0-7
 {
 	int vpage = va/2;
 	pte_struct vpageEntry = pte[vpage];
+	vpageEntry.valid = 1;//DELETE LATER FOR DEBUGGING PURPOSES---------------------
 	if (vpageEntry.valid == 0) {
-		handle_pf(va);
+		//handle_pf(vpageEntry);
+		return -1; //temporary
 	}
+	
 	int ppage = vpageEntry.page;
-	return (ppage*2 + (va % 2));
+	int pa = (ppage*2 + (va % 2));
+	return pa;
 }
 
 // In progress (Feel free to work on it)
