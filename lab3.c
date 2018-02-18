@@ -8,14 +8,14 @@
 #define PT_SIZE 8
 #define MAIN_MEM_SIZE 8
 #define DISK_MEM_SIZE 16
-#define PAGE_SIZE 2
 #define MAX_INPUTS 3
+#define MAIN_PAGE_COUNT 4
 
 typedef struct {
 	int entry;
 	int valid; //1 if in main_mem, 0 is on disk_mem
 	int dirty; //1 if newer data in main_mem than disk_mem
-	int page;
+	int page_number;
 } pte_struct;
 
 void initalize_mem();
@@ -28,7 +28,7 @@ int showdisk(int page_num);
 int showptable();
 int quit();
 
-void handle_pf();
+void handle_pf(int va);
 int va_to_pa(int va);
 
 int handle_input(int** input_p);
@@ -40,6 +40,7 @@ void free_mem(int** input_p);
 pte_struct pte[PT_SIZE];
 int main_mem[MAIN_MEM_SIZE]; 
 int disk_mem[DISK_MEM_SIZE];
+int page_use_order[MAIN_PAGE_COUNT]; //New global var, keeps track of use order
 
 int main(int argc, const char * argv[])
 {
@@ -102,8 +103,8 @@ int read(int va) //virtual address are converted to physical addresses | phys ad
 {
 	
 	int pa = va_to_pa(va);
-	printf("Virtual address: \n", va);
-	printf("Physical address: \n", va);
+	printf("Virtual address: %i\n", va);
+	printf("Physical address: %i\n", va);
 	/*
 	int virtualPageNum = va >> 1;
 	int offset = va % 2;
@@ -133,11 +134,41 @@ int read(int va) //virtual address are converted to physical addresses | phys ad
 	return 1;
 }
 
+// In progress (feel free to work on it)
 int write(int va, int n)
 {
-	printf("write %i %i\n", va, n);
-	handle_pf(); // handles page fault
+	/*
+	int main_page = find_free_page();
+	if(main_page == -1);
+		handle_pf(va);
+	*/
 	return 1;
+}
+
+// Returns -1 if no free memory, otherwise returns free  main_mem page (Not tested, feel free to test)
+int find_free_page()
+{
+	int page_nums[4] = {-1,-1,-1,-1};
+	int index = 0;
+	int va;
+	for(va=0; i<PT_SIZE; i++)
+	{
+		if(pte[i].valid  == 1)
+		{
+			page_nums[index] = pte[va.page_number];
+			index++;
+		}	
+	}
+
+	if(index < 3)
+	{	
+		int sum = 6; // hardcoded: 3+2+1 = 6
+		int i;
+		for(i=0; i<index; i++)
+			index -= page_nums[i];
+		return sum;
+	}		
+	return -1;
 }
 
 int va_to_pa(int va)
@@ -145,15 +176,23 @@ int va_to_pa(int va)
 	int vpage = va/2;
 	pte_struct vpageEntry = pte[vpage];
 	if (vpageEntry.valid == 0) {
-		handle_pf();
+		handle_pf(va);
 	}
 	int ppage = vpageEntry.page;
 	return (ppage*2 + (va % 2));
 }
 
-void handle_pf()
+// In progress (Feel free to work on it)
+int handle_pf(int va)
 {
+	/*
 	//Find first available page //if data = -1?
+	int main_page = find_free_page();
+	if(main_page != -1)
+		return main_page; // not handled yet
+
+	printf("%i", find_victim());
+	
 	//If none available
 	//	Find victim page
 	//	copy to disk if dirty
@@ -161,6 +200,18 @@ void handle_pf()
 	//
 	//	After found page, copy disk_mem page to main_mem page
 	//	Then update page table (set Valid = 1)
+	*/
+}
+
+// Completed but not functional as va_use_order is not being updated currently
+int find_victim()
+{
+	int lowest_page = 0;
+	int i;
+	for(i=1; i<MAIN_PAGE_COUNT;i++)
+		if(va_use_order[i] > va_use_order[lowest_page])
+			lowest_page = i;
+	return lowest_page;
 }
 
 int showmain(int page_num)
@@ -250,14 +301,16 @@ void initalize_mem()
 	fill_array(disk_mem, DISK_MEM_SIZE, -1);
 
 	int i;
-	int counter = 0;
 	for(i = 0; i < PT_SIZE; i++)
 	{
 		pte[i].entry = i;
 		pte[i].valid = 0;
 		pte[i].dirty = 0;
-		pte[i].page = i;
+		pte[i].page_number = i;
 	}
+
+	for(i=0; i<MAIN_SLOT_SIZE; i++)
+		page_use_order = -1;
 }
 
 void fill_array(int* array, int array_size, int n)
