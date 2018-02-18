@@ -12,9 +12,9 @@
 #define MAX_INPUTS 3
 
 typedef struct pte_struct {
-	int entry; //virtual address
+	int entry; //virtual address?
 	int valid; //1 if in main_mem, 0 is on disk_mem
-	int dirty;
+	int dirty; //Dirty means that after you loaded it to memory you write to it, so it is a newer copy than whats on disk.
 	int page;
 } pte_struct;
 
@@ -38,7 +38,7 @@ void free_mem(int** input_p);
 int main(int argc, const char * argv[])
 {
 	pte_struct pte[PT_SIZE]; //metadeta
-	int main_mem[MAIN_MEM_SIZE]; //index = main memory address, data = contents of the array
+	int main_mem[MAIN_MEM_SIZE]; //index = main memory address, data = contents of the array / if addr is odd page = (addr-1)/2 if even addr/2 
 	int disk_mem[DISK_MEM_SIZE]; //disk memory
 	initalize_mem(pt, pte, main_mem, disk_mem);
 
@@ -90,10 +90,26 @@ int handle_input(int** input_p)
 int read(int va) //
 {
 	printf("read %i\n", va);
-	//Check if va in main_mem
-	if (pte[va].valid == 1) { //in main memory
-		main_mem[va] == disk_mem[va];
+	//Check if va in mem
+	int virtualPageNum = va >> 1;
+	int offset = va % 2;
+	if (var%2==0) {
+		int pageNum = var/2;
 	}
+	else {
+		int pageNum = (var-1)/2;
+	}
+	int physAddr = pageNum*2 + offset
+	
+	if (pte[pageNum].valid == 1) { //page in main memory
+		return main_mem[physAddr] //read the data
+	}
+	else {//page in disk memory
+	 //page fault
+	 //handle_pf();
+	}
+	
+	
 	
 	//If true: read the data
 	//If false: page fault
@@ -110,7 +126,7 @@ int write(int va, int n)
 
 void handle_pf()
 {
-	//Find first available page
+	//Find first available page //if data = -1?
 	//If none available
 	//	Find victim page
 	//	copy to disk if dirty
@@ -204,10 +220,7 @@ void initalize_mem(int* pt, pte_struct* pte, int* main_mem, int* disk_mem)
 		pte[i].entry = i;
 		pte[i].valid = 0;
 		pte[i].dirty = 0;
-		pte[i].page = counter;
-		
-		if (i%2 !=0) { //if i is odd
-		counter++;
+		pte[i].page = i;
 		}
 	}
 }
