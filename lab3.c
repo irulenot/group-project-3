@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define PT_SIZE 16
+#define PT_SIZE 8
 #define MAIN_MEM_SIZE 8
 #define DISK_MEM_SIZE 16
 #define PAGE_SIZE 2
@@ -143,7 +143,7 @@ int showmain(int page_num)
 	int index2 = page_num*2 +1;
 	printf("Address   Contents");
 	printf("%d   %d", index1, main_mem[index1]);
-	printf("%d   %d", index2, main_mem[index2]);
+	printf("%d   %d", index2, main_mem[index2s]);
 	return 1;
 }
 
