@@ -57,10 +57,9 @@ int main(int argc, const char * argv[])
 	initalize_mem();
 
 	// Testing input from file
-	FILE *file;
-	char *filename = "t1.txt";
+	FILE* file;
+	char* filename = "t1.txt";
 	file = fopen(filename,"r");
-
 	char input[50];
 	while(fgets(input, 50, file) != NULL)
 	{
@@ -72,7 +71,7 @@ int main(int argc, const char * argv[])
 		free_mem(input_p);
 	}
 	fclose(file);	
-
+	
 	// ==============================================================	
 	/* Unfinished manual input, to be used later when done testing	   
 
