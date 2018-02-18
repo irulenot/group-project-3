@@ -11,14 +11,14 @@
 #define PAGE_SIZE 2
 #define MAX_INPUTS 3
 
-typedef struct pte_struct {
-	int entry; //virtual address?
+typedef struct {
+	int entry;
 	int valid; //1 if in main_mem, 0 is on disk_mem
-	int dirty; //Dirty means that after you loaded it to memory you write to it, so it is a newer copy than whats on disk.
+	int dirty; //1 if newer data in main_mem than disk_mem
 	int page;
 } pte_struct;
 
-void initalize_mem(int* pt, pte_struct* pte, int* main_mem, int* disk_mem);
+void initalize_mem(pte_struct* pte, int* main_mem, int* disk_mem);
 void fill_array(int* array, int array_size, int n);
 
 int read(int va);
@@ -29,18 +29,20 @@ int showptable();
 int quit();
 
 void handle_pf();
-void parse_input(char* input, int** input_p);
-int handle_input(int** input_p);
+void va_to_pa(int va, pte_struct* pte);
 
+int handle_input(int** input_p, pte_struct* pte);
 void prep_input_p(int** input_p);
+void parse_input(char* input, int** input_p);
+
 void free_mem(int** input_p);
 
 int main(int argc, const char * argv[])
 {
-	pte_struct pte[PT_SIZE]; //metadeta
-	int main_mem[MAIN_MEM_SIZE]; //index = main memory address, data = contents of the array / if addr is odd page = (addr-1)/2 if even addr/2 
-	int disk_mem[DISK_MEM_SIZE]; //disk memory
-	initalize_mem(pt, pte, main_mem, disk_mem);
+	pte_struct pte[PT_SIZE];
+	int main_mem[MAIN_MEM_SIZE]; 
+	int disk_mem[DISK_MEM_SIZE];
+	initalize_mem(pte, main_mem, disk_mem);
 
 	// Testing input from file
 	FILE *file;
@@ -54,7 +56,7 @@ int main(int argc, const char * argv[])
 		prep_input_p(input_p);
 
 		parse_input(input, input_p);
-		handle_input(input_p);
+		handle_input(input_p, pte);
 		free_mem(input_p);
 	}
 	fclose(file);	
@@ -80,17 +82,28 @@ int main(int argc, const char * argv[])
 	return 0;
 }
 
-int handle_input(int** input_p)
+// input_p: contains the user's cmd
+// handle_input: calls appropriate function based on input_p
+int handle_input(int** input_p, pte_struct* pte)
 {
-
-
-	//if(input_p[0] == "read")
+	if(*input_p[0] == 0)
+		return read(*input_p[1]);
+	if(*input_p[0] == 1)
+		return write(*input_p[1], *input_p[2]);
+	if(*input_p[0] == 2)
+		return showmain(*input_p[1]);
+	if(*input_p[0] == 3)
+		return showdisk(*input_p[1]);
+	if(*input_p[0] == 4)
+		return showptable();
+	printf("Quitting\n"); 			// FOR DEBUGGING PURPOSES
+	return quit();
 } 
 
-int read(int va) //
+int read(int va)
 {
 	printf("read %i\n", va);
-	//Check if va in mem
+	/*Check if va in mem
 	int virtualPageNum = va >> 1;
 	int offset = va % 2;
 	int pageNum;
@@ -115,6 +128,7 @@ int read(int va) //
 	//If true: read the data
 	//If false: page fault
 	//	Then read the data
+	*/
 	return 1;
 }
 
@@ -139,12 +153,14 @@ void handle_pf()
 
 int showmain(int page_num)
 {
-	printf("showdomain %i\n", page_num);
+	printf("showmain %i\n", page_num);
+	/*
 	int index1 = page_num*2;
 	int index2 = page_num*2 +1;
 	printf("Address   Contents");
 	printf("%d   %d", index1, main_mem[index1]); //main_mem undeclared?
 	printf("%d   %d", index2, main_mem[index2]); //main_mem undeclared?
+	*/
 	return 1;
 }
 
@@ -159,6 +175,8 @@ int showptable()
 	printf("showptable\n");
 	return 1;
 }
+
+// ===================== FINISHED ====================
 
 int quit()
 {
@@ -213,9 +231,8 @@ int convert_string(char* temp)
 	return (int) atol(temp);
 }
 
-void initalize_mem(int* pt, pte_struct* pte, int* main_mem, int* disk_mem)
+void initalize_mem(pte_struct* pte, int* main_mem, int* disk_mem)
 {
-	fill_array(pt, PT_SIZE, 0);
 	fill_array(main_mem, MAIN_MEM_SIZE, 0);
 	fill_array(disk_mem, DISK_MEM_SIZE, -1);
 
