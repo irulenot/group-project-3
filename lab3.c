@@ -61,10 +61,6 @@ int main(int argc, const char * argv[])
 	char *filename = "t_simple.txt";
 	file = fopen(filename,"r");
 
-	// TESTING
-	
-	// TESTING
-
 	char input[50];
 	while(fgets(input, 50, file) != NULL)
 	{
@@ -113,34 +109,22 @@ int handle_input(int** input_p)
 	return quit();
 } 
 
-// I didn't touch anything here
-int read(int va) //virtual address are converted to physical addresses | phys addresses are indexes in main_mem array | disk addresses are indexes in disk array
+int read(int va)
 {
 	printf("read %i\n", va);
-	/*
-	int pa = va_to_pa(va);
-	printf("Virtual address: %d\n", va);
-	printf("Physical address: %d\n", pa);
-
-	int virtualPageNum = va >> 1; //used to index the page table
 	
-	if (pte[virtualPageNum].valid == 1) { //page in main memory
-		printf("Address: \n"); // print----------------------------
-		printf("Content: %d\n", main_mem[pa]);
-		return main_mem[pa]; //read the data
-	}
-	else {//page in disk memory
-	 //page fault
-	 //handle_pf();
-	}
+	int main_page = -1;
+	if (pte[va/2].valid == 1)
+		main_page = pte[va/2].page_number;
+	else
+	 	main_page = handle_pf(va);
+	
+	int main_addr = main_page*2;
+	if(va%2==1)
+		main_addr++;	
 
-	update_order(main_page); //main_page is the one being affected
-	*/
-
-	//If true: read the data
-	//If false: page fault
-	//	Then read the data
-
+	printf("Data in %i is %i\n", va, main_mem[main_addr]); 
+	update_order(main_page);
 	return 1;
 }
 
@@ -153,23 +137,16 @@ int write(int va, int n)
 		free_page = handle_pf(va);
 	int free_addr = free_page*2;
 	
-	/* IN PROGRESS
-	if(va%2=1)
-	{
-		main_mem[free_page*2] = disk_mem[va];
-		main_mem[free_page*2+1] = disk_mem[va+1];
-	}
+	if(va%2==1)
+		main_mem[free_addr+1] = n;
 	else
-	{
-		main_mem[free_page*2] = disk_mem[va
-	}
-	pte[va].valid = 1;
-	pte[va].dirty = 1;
-	pte[va].page_num = va/2;
+		main_mem[free_addr] = n;
 
-	update_order(va/2) = ;
-	*/
+	pte[va/2].valid = 1;
+	pte[va/2].dirty = 1;
+	pte[va/2].page_number = free_page;
 
+	update_order(va/2);
 	return 1;
 }
 
@@ -280,26 +257,32 @@ int find_victim()
 
 int showmain(int page_num)
 {
-	printf("showmain %i\n", page_num);
-	/*
-	   int index1 = page_num*2;
-	   int index2 = page_num*2 +1;
+	   int i = page_num*2;
 	   printf("Address   Contents\n");
-	   printf("%d   %d\n", index1, main_mem[index1]); //main_mem undeclared?
-	   printf("%d   %d\n", index2, main_mem[index2]); //main_mem undeclared?
-	 */
+	   printf("%d   %d\n", i, disk_mem[i]);
+	   printf("%d   %d\n", i+1, disk_mem[i+1]);
 	return 1;
 }
 
 int showdisk(int page_num)
 {
-	printf("showdisk %i\n", page_num);
+	   int i = page_num*2;
+	   printf("Address   Contents\n");
+	   printf("%d   %d\n", i, disk_mem[i]);
+	   printf("%d   %d\n", i+1, disk_mem[i+1]);
 	return 1;
 }
 
 int showptable()
 {
-	printf("showptable\n");
+	int i;
+	for(i=0; i<PT_SIZE; i++)
+	{
+		printf("%i\n", pte[i].entry);
+		printf("%i\n", pte[i].valid);
+		printf("%i\n", pte[i].dirty);
+		printf("%i\n", pte[i].page_number);	
+	}
 	return 1;
 }
 
