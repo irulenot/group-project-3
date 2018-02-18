@@ -139,6 +139,11 @@ void handle_pf()
 int showmain(int page_num)
 {
 	printf("showdomain %i\n", page_num);
+	int index1 = page_num*2;
+	int index2 = page_num*2 +1;
+	printf("Address   Contents");
+	printf("%d   %d", index1, main_mem[index1]);
+	printf("%d   %d", index2, main_mem[index2]);
 	return 1;
 }
 
