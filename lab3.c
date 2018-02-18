@@ -98,7 +98,7 @@ int handle_input(int** input_p)
 	return quit();
 } 
 
-int read(int va)
+int read(int va) //virtual address are converted to physical addresses | phys addresses are indexes in main_mem array disk addresses are indexes in disk array
 {
 	/*
 	int virtualPageNum = va >> 1;
@@ -136,6 +136,17 @@ int write(int va, int n)
 	return 1;
 }
 
+void va_to_pa(int va)
+{
+	int vpage = va/2;
+	pte_struct vpageEntry = pte[vpage];
+	if (vpageEntry.valid == 0) {
+		handle_pf();
+	}
+	int ppage = vpageEntry.page;
+	int pa = ppage*2 + (va % 2);
+}
+
 void handle_pf()
 {
 	//Find first available page //if data = -1?
@@ -154,9 +165,9 @@ int showmain(int page_num)
 	/*
 	int index1 = page_num*2;
 	int index2 = page_num*2 +1;
-	printf("Address   Contents");
-	printf("%d   %d", index1, main_mem[index1]); //main_mem undeclared?
-	printf("%d   %d", index2, main_mem[index2]); //main_mem undeclared?
+	printf("Address   Contents\n");
+	printf("%d   %d\n", index1, main_mem[index1]); //main_mem undeclared?
+	printf("%d   %d\n", index2, main_mem[index2]); //main_mem undeclared?
 	*/
 	return 1;
 }
