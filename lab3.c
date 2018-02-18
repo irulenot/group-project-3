@@ -93,16 +93,17 @@ int read(int va) //
 	//Check if va in mem
 	int virtualPageNum = va >> 1;
 	int offset = va % 2;
+	int pageNum;
 	if (var%2==0) {
-		int pageNum = var/2;
+		pageNum = var/2;
 	}
 	else {
-		int pageNum = (var-1)/2;
+		pageNum = (var-1)/2;
 	}
-	int physAddr = pageNum*2 + offset
+	int physAddr = pageNum*2 + offset;
 	
 	if (pte[pageNum].valid == 1) { //page in main memory
-		return main_mem[physAddr] //read the data
+		return main_mem[physAddr]; //read the data
 	}
 	else {//page in disk memory
 	 //page fault
@@ -142,8 +143,8 @@ int showmain(int page_num)
 	int index1 = page_num*2;
 	int index2 = page_num*2 +1;
 	printf("Address   Contents");
-	printf("%d   %d", index1, main_mem[index1]);
-	printf("%d   %d", index2, main_mem[index2s]);
+	printf("%d   %d", index1, main_mem[index1]); //main_mem undeclared?
+	printf("%d   %d", index2, main_mem[index2]); //main_mem undeclared?
 	return 1;
 }
 
@@ -226,7 +227,6 @@ void initalize_mem(int* pt, pte_struct* pte, int* main_mem, int* disk_mem)
 		pte[i].valid = 0;
 		pte[i].dirty = 0;
 		pte[i].page = i;
-		}
 	}
 }
 
