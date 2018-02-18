@@ -1,0 +1,142 @@
+write 13 23
+showdisk 6
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+read 4
+showptable
+write 3 190
+showdisk 1
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+write 13 141
+showdisk 6
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+write 8 158
+showdisk 4
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+read 11
+showptable
+read 14
+showptable
+read 11
+showptable
+read 6
+showptable
+read 7
+showptable
+write 10 239
+showdisk 5
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+read 14
+showptable
+write 10 145
+showdisk 5
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+write 14 74
+showdisk 7
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+read 12
+showptable
+read 14
+showptable
+write 13 57
+showdisk 6
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+write 15 110
+showdisk 7
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+read 6
+showptable
+write 4 38
+showdisk 2
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+write 0 233
+showdisk 0
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+read 10
+showptable
+write 5 3
+showdisk 2
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+read 11
+showptable
+read 13
+showptable
+read 7
+showptable
+read 13
+showptable
+write 11 220
+showdisk 5
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+write 0 12
+showdisk 0
+showmain 0
+showmain 1
+showmain 2
+showmain 3
+showptable
+read 2
+showptable
+showdisk 0
+showdisk 1
+showdisk 2
+showdisk 3
+showdisk 4
+showdisk 5
+showdisk 6
+showdisk 7
+showmain 0
+showmain 1
+showmain 2
+showmain 3

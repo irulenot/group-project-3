@@ -1,0 +1,16 @@
+write 0 1
+write 1 11
+write 2 111
+write 3 1111
+write 4 11111
+write 5 111111
+read 0
+read 1
+read 2
+read 3
+read 4
+read 5
+read 6
+showptable
+showmain 0
+showdisk 0
