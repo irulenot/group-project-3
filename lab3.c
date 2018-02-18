@@ -18,7 +18,7 @@ typedef struct {
 	int page;
 } pte_struct;
 
-void initalize_mem(pte_struct* pte, int* main_mem, int* disk_mem);
+void initalize_mem();
 void fill_array(int* array, int array_size, int n);
 
 int read(int va);
@@ -29,20 +29,21 @@ int showptable();
 int quit();
 
 void handle_pf();
-void va_to_pa(int va, pte_struct* pte);
+void va_to_pa(int va);
 
-int handle_input(int** input_p, pte_struct* pte);
+int handle_input(int** input_p);
 void prep_input_p(int** input_p);
 void parse_input(char* input, int** input_p);
 
 void free_mem(int** input_p);
 
+pte_struct pte[PT_SIZE];
+int main_mem[MAIN_MEM_SIZE]; 
+int disk_mem[DISK_MEM_SIZE];
+
 int main(int argc, const char * argv[])
 {
-	pte_struct pte[PT_SIZE];
-	int main_mem[MAIN_MEM_SIZE]; 
-	int disk_mem[DISK_MEM_SIZE];
-	initalize_mem(pte, main_mem, disk_mem);
+	initalize_mem();
 
 	// Testing input from file
 	FILE *file;
@@ -56,7 +57,7 @@ int main(int argc, const char * argv[])
 		prep_input_p(input_p);
 
 		parse_input(input, input_p);
-		handle_input(input_p, pte);
+		handle_input(input_p);
 		free_mem(input_p);
 	}
 	fclose(file);	
@@ -82,9 +83,7 @@ int main(int argc, const char * argv[])
 	return 0;
 }
 
-// input_p: contains the user's cmd
-// handle_input: calls appropriate function based on input_p
-int handle_input(int** input_p, pte_struct* pte)
+int handle_input(int** input_p)
 {
 	if(*input_p[0] == 0)
 		return read(*input_p[1]);
@@ -96,14 +95,12 @@ int handle_input(int** input_p, pte_struct* pte)
 		return showdisk(*input_p[1]);
 	if(*input_p[0] == 4)
 		return showptable();
-	printf("Quitting\n"); 			// FOR DEBUGGING PURPOSES
 	return quit();
 } 
 
 int read(int va)
 {
-	printf("read %i\n", va);
-	/*Check if va in mem
+	/*
 	int virtualPageNum = va >> 1;
 	int offset = va % 2;
 	int pageNum;
@@ -180,6 +177,7 @@ int showptable()
 
 int quit()
 {
+	printf("quit\n");
 	return 0;
 }
 
@@ -231,7 +229,7 @@ int convert_string(char* temp)
 	return (int) atol(temp);
 }
 
-void initalize_mem(pte_struct* pte, int* main_mem, int* disk_mem)
+void initalize_mem()
 {
 	fill_array(main_mem, MAIN_MEM_SIZE, 0);
 	fill_array(disk_mem, DISK_MEM_SIZE, -1);

@@ -18,3 +18,4 @@ read 7
 showmain 0
 showdisk 0
 showptable
+quit
