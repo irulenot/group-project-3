@@ -58,25 +58,6 @@ int main(int argc, const char * argv[])
 {
 	initalize_mem();
 	
-	// Testing input from file
-	FILE* file;
-	char* filename = "test.txt";
-	file = fopen(filename,"r");
-	char input[50];
-	while(fgets(input, 50, file) != NULL)
-	{
-	int* input_p[MAX_INPUTS];
-	prep_input_p(input_p);
-
-	parse_input(input, input_p);
-	handle_input(input_p);
-	free_mem(input_p);
-	}
-	fclose(file);	
-
-	print_all();
-	
-	/* ==============================================================	
 	char input[50];
 	int running = 1;
 	while(running)
@@ -91,8 +72,6 @@ int main(int argc, const char * argv[])
 		free_mem(input_p);
 		printf("\n");
 	}
-
-	*/	
 
 	return 0;
 }
@@ -114,7 +93,6 @@ int handle_input(int** input_p)
 
 int read(int va)
 {
-	printf("Read %i\n", va);
 	int main_page;
 	if (pte[va/2].valid == 1)
 		main_page = pte[va/2].page_number;
@@ -132,8 +110,6 @@ int read(int va)
 
 int write(int va, int n)
 {
-	printf("Write %i %i\n", va, n);
-	// ^TO BE DELETED
 	int free_page;
 	if(pte[va/2].valid == 1)
 		free_page = pte[va/2].page_number;
@@ -198,8 +174,6 @@ int handle_pf(int va)
 		main_page = pte[victim_pte].page_number;
 		disk_page = pte[victim_pte].entry;
 		
-		printf("main_page: %i\n", main_page);
-
 		disk_mem[disk_page*2] = main_mem[main_page*2];
 		disk_mem[disk_page*2+1] = main_mem[main_page*2 +1];
 		pte[victim_pte].valid = 0;
