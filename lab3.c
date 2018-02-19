@@ -115,6 +115,7 @@ int handle_input(int** input_p)
 
 int read(int va)
 {
+	printf("Read %i\n", va);
 	int main_page;
 	if (pte[va/2].valid == 1)
 		main_page = pte[va/2].page_number;
@@ -162,7 +163,7 @@ int write(int va, int n)
 	pte[va/2].dirty = 1;
 	pte[va/2].page_number = free_page;
 
-	update_order(va/2);
+	update_order(free_page);
 	return 1;
 }
 
@@ -185,9 +186,9 @@ int find_free_page()
 int handle_pf(int va)
 {
 	printf("HANDLE_PF\n");
-	int victim_pte = -1;
-	int disk_page = -1;
-	int main_page = -1;
+	int victim_pte;
+	int disk_page;
+	int main_page;
 
 	int free_page = find_free_page();
 	if(free_page != -1)
@@ -204,11 +205,12 @@ int handle_pf(int va)
 		disk_mem[disk_page*2+1] = main_mem[main_page+1];
 		pte[victim_pte].valid = 0;
 		pte[victim_pte].dirty = 0;
+		pte[victim_pte].page_number = pte[victim_pte].entry;
 	}
 
 	disk_page = va/2;
 	int va_data[2] = {disk_mem[disk_page*2], disk_mem[disk_page*2 + 1]};
-	
+	printf("%i\n", victim_pte);	
 	main_mem[main_page*2] = va_data[0];
 	main_mem[main_page*2 + 1] = va_data[1];
 
@@ -235,9 +237,9 @@ int find_victim()
 	for(i=1; i<MAIN_PAGE_COUNT; i++)
 		if(use_order[i] > use_order[lowest_page])
 			lowest_page = i;
-
+	printf("LOWEST: %i %i %i\n", lowest_page, use_order[0], use_order[1]);
 	for(i=0; i<PT_SIZE; i++)
-		if(pte[i].page_number == lowest_page)
+		if(pte[i].page_number == lowest_page && pte[i].valid == 1)
 			return i; 
 
 	printf("Error: find_victim\n");
