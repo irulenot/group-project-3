@@ -60,7 +60,7 @@ int main(int argc, const char * argv[])
 
 	// Testing input from file
 	FILE* file;
-	char* filename = "t3.txt";
+	char* filename = "t2.txt";
 	file = fopen(filename,"r");
 	char input[50];
 	while(fgets(input, 50, file) != NULL)

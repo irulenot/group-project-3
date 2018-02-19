@@ -1,132 +1,62 @@
-write 13 23
-showdisk 6
-showmain 0
-showmain 1
-showmain 2
-showmain 3
+write 5 75
 showptable
-read 4
-showptable
-write 3 190
-showdisk 1
-showmain 0
-showmain 1
-showmain 2
-showmain 3
-showptable
-write 13 141
-showdisk 6
-showmain 0
-showmain 1
-showmain 2
-showmain 3
-showptable
-write 8 158
-showdisk 4
-showmain 0
-showmain 1
-showmain 2
-showmain 3
-showptable
-read 11
-showptable
-read 14
-showptable
-read 11
-showptable
-read 6
-showptable
-read 7
-showptable
-write 10 239
-showdisk 5
-showmain 0
-showmain 1
-showmain 2
-showmain 3
-showptable
-read 14
-showptable
-write 10 145
-showdisk 5
-showmain 0
-showmain 1
-showmain 2
-showmain 3
-showptable
-write 14 74
-showdisk 7
-showmain 0
-showmain 1
-showmain 2
-showmain 3
+write 4 127
 showptable
 read 12
 showptable
-read 14
+write 4 191
 showptable
-write 13 57
-showdisk 6
-showmain 0
-showmain 1
-showmain 2
-showmain 3
+write 15 190
 showptable
-write 15 110
-showdisk 7
-showmain 0
-showmain 1
-showmain 2
-showmain 3
+write 15 46
 showptable
-read 6
+read 9
 showptable
-write 4 38
-showdisk 2
-showmain 0
-showmain 1
-showmain 2
-showmain 3
+read 0
 showptable
-write 0 233
-showdisk 0
-showmain 0
-showmain 1
-showmain 2
-showmain 3
+write 8 121
 showptable
-read 10
+read 8
 showptable
-write 5 3
-showdisk 2
-showmain 0
-showmain 1
-showmain 2
-showmain 3
+write 3 93
+showptable
+write 13 151
+showptable
+read 4
 showptable
 read 11
 showptable
-read 13
+write 14 157
+showptable
+read 9
+showptable
+write 5 57
+showptable
+write 3 115
+showptable
+write 9 115
+showptable
+write 13 154
+showptable
+write 6 251
+showptable
+read 10
+showptable
+read 2
+showptable
+read 14
+showptable
+write 6 83
 showptable
 read 7
 showptable
-read 13
+read 8
 showptable
-write 11 220
-showdisk 5
-showmain 0
-showmain 1
-showmain 2
-showmain 3
+write 12 203
 showptable
-write 0 12
-showdisk 0
-showmain 0
-showmain 1
-showmain 2
-showmain 3
+write 9 25
 showptable
-read 2
+read 5
 showptable
 showdisk 0
 showdisk 1
@@ -140,3 +70,4 @@ showmain 0
 showmain 1
 showmain 2
 showmain 3
+quit
