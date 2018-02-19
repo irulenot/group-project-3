@@ -70,7 +70,6 @@ int main(int argc, const char * argv[])
 		parse_input(input, input_p);
 		running = handle_input(input_p);
 		free_mem(input_p);
-		printf("\n");
 	}
 
 	return 0;
