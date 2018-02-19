@@ -156,7 +156,6 @@ int write(int va, int n)
 			main_mem[free_addr+1] = disk_mem[va/2+1];
 		main_mem[free_addr] = n;
 	}
-	disk_mem[va] = n;
 
 	pte[va/2].valid = 1;
 	pte[va/2].dirty = 1;

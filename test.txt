@@ -18,19 +18,12 @@ write 5 57
 write 3 115
 write 9 115
 write 13 154
-showptable
 write 6 251
-showptable
 read 10
-showptable
 read 2
-showptable
 read 14
-showptable
 write 6 83
-showptable
 read 7
-showptable
 read 8
 showptable
 write 12 203
