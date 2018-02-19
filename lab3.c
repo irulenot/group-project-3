@@ -57,7 +57,7 @@ void print_all();
 int main(int argc, const char * argv[])
 {
 	initalize_mem();
-/*
+	
 	// Testing input from file
 	FILE* file;
 	char* filename = "test.txt";
@@ -65,34 +65,34 @@ int main(int argc, const char * argv[])
 	char input[50];
 	while(fgets(input, 50, file) != NULL)
 	{
+	int* input_p[MAX_INPUTS];
+	prep_input_p(input_p);
+
+	parse_input(input, input_p);
+	handle_input(input_p);
+	free_mem(input_p);
+	}
+	fclose(file);	
+
+	print_all();
+	
+	/* ==============================================================	
+	char input[50];
+	int running = 1;
+	while(running)
+	{
+		printf("$ ");
 		int* input_p[MAX_INPUTS];
 		prep_input_p(input_p);
 
+		fgets(input, 20, stdin);
 		parse_input(input, input_p);
-		handle_input(input_p);
+		running = handle_input(input_p);
 		free_mem(input_p);
+		printf("\n");
 	}
-	fclose(file);	
-	
-	print_all();
-	*/
-	// ==============================================================	
-	///* Unfinished manual input, to be used later when done testing	   
-	   char input[50];
-	   int running = 1;
-	   while(running)
-	   {
-	   printf("$ ");
-	   int* input_p[MAX_INPUTS];
-	   prep_input_p(input_p);
-	   fgets(input, 20, stdin);
-	   parse_input(input, input_p);
-	   running = handle_input(input_p);
-	   free_mem(input_p);
-	   printf("\n");
-	   }
 
-	 //*/	
+	*/	
 
 	return 0;
 }
@@ -142,7 +142,7 @@ int write(int va, int n)
 
 	if(free_page == -1)
 		free_page = handle_pf(va);
-	
+
 	int free_addr = free_page*2;
 	if(va%2==1)
 	{
@@ -157,7 +157,7 @@ int write(int va, int n)
 		main_mem[free_addr] = n;
 	}
 	disk_mem[va] = n;
-	
+
 	pte[va/2].valid = 1;
 	pte[va/2].dirty = 1;
 	pte[va/2].page_number = free_page;
@@ -184,7 +184,6 @@ int find_free_page()
 // Returns freed page number in main_mem
 int handle_pf(int va)
 {
-	printf("HANDLE_PF\n");
 	int victim_pte;
 	int disk_page;
 	int main_page;
@@ -199,9 +198,11 @@ int handle_pf(int va)
 		victim_pte = find_victim();
 		main_page = pte[victim_pte].page_number;
 		disk_page = pte[victim_pte].entry;
+		
+		printf("main_page: %i\n", main_page);
 
-		disk_mem[disk_page*2] = main_mem[main_page];
-		disk_mem[disk_page*2+1] = main_mem[main_page+1];
+		disk_mem[disk_page*2] = main_mem[main_page*2];
+		disk_mem[disk_page*2+1] = main_mem[main_page*2 +1];
 		pte[victim_pte].valid = 0;
 		pte[victim_pte].dirty = 0;
 		pte[victim_pte].page_number = pte[victim_pte].entry;
@@ -209,7 +210,6 @@ int handle_pf(int va)
 
 	disk_page = va/2;
 	int va_data[2] = {disk_mem[disk_page*2], disk_mem[disk_page*2 + 1]};
-	printf("%i\n", victim_pte);	
 	main_mem[main_page*2] = va_data[0];
 	main_mem[main_page*2 + 1] = va_data[1];
 
@@ -236,7 +236,6 @@ int find_victim()
 	for(i=1; i<MAIN_PAGE_COUNT; i++)
 		if(use_order[i] > use_order[lowest_page])
 			lowest_page = i;
-	printf("LOWEST: %i %i %i\n", lowest_page, use_order[0], use_order[1]);
 	for(i=0; i<PT_SIZE; i++)
 		if(pte[i].page_number == lowest_page && pte[i].valid == 1)
 			return i; 
@@ -365,7 +364,7 @@ void print_all()
 	for(i=0; i<DISK_MEM_SIZE; i++)
 		printf("%i ", disk_mem[i]);
 	printf("\n");
-	
+
 	printf("MAIN_MEM\n");
 	for(i=0; i<MAIN_MEM_SIZE; i++)
 		printf("%i ", main_mem[i]);
