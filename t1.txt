@@ -9,7 +9,15 @@ read 1
 read 2
 read 3
 read 4
+<<<<<<< HEAD
 read 5
+=======
+<<<<<<< HEAD
+read 5
+=======
+read 
+>>>>>>> master
+>>>>>>> e8f52d73953f928802dbd4f50da836974e10a42d
 read 6
 showptable
 showmain 0
