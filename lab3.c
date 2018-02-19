@@ -57,7 +57,7 @@ void print_all();
 int main(int argc, const char * argv[])
 {
 	initalize_mem();
-
+/*
 	// Testing input from file
 	FILE* file;
 	char* filename = "test.txt";
@@ -75,25 +75,24 @@ int main(int argc, const char * argv[])
 	fclose(file);	
 	
 	print_all();
-	
+	*/
 	// ==============================================================	
-	/* Unfinished manual input, to be used later when done testing	   
-
+	///* Unfinished manual input, to be used later when done testing	   
+	   char input[50];
 	   int running = 1;
 	   while(running)
 	   {
 	   printf("$ ");
 	   int* input_p[MAX_INPUTS];
 	   prep_input_p(input_p);
-
-		char input[50] = ... //USER INPUT GOES HERE
+	   fgets(input, 20, stdin);
 	   parse_input(input, input_p);
 	   running = handle_input(input_p);
 	   free_mem(input_p);
 	   printf("\n");
 	   }
 
-	 */	
+	 //*/	
 
 	return 0;
 }
