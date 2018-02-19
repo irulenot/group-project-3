@@ -1,0 +1,14 @@
+write 0 0
+read 0
+write 1 1
+read 0
+read 1
+write 2 2
+read 0
+read 1
+read 2
+write 3 3
+read 0
+read 1
+read 2
+read 3

@@ -46,6 +46,8 @@ int main_mem[MAIN_MEM_SIZE];
 int disk_mem[DISK_MEM_SIZE];
 int use_order[MAIN_PAGE_COUNT];
 
+void print_all();
+
 // 4 different kinds of addresses
 // va = disk_addr = disk_mem[i]
 // disk_page = disk_mem[i/2]
@@ -58,7 +60,7 @@ int main(int argc, const char * argv[])
 
 	// Testing input from file
 	FILE* file;
-	char* filename = "t1.txt";
+	char* filename = "test.txt";
 	file = fopen(filename,"r");
 	char input[50];
 	while(fgets(input, 50, file) != NULL)
@@ -71,6 +73,8 @@ int main(int argc, const char * argv[])
 		free_mem(input_p);
 	}
 	fclose(file);	
+	
+	print_all();
 	
 	// ==============================================================	
 	/* Unfinished manual input, to be used later when done testing	   
@@ -110,7 +114,7 @@ int handle_input(int** input_p)
 
 int read(int va)
 {
-	int main_page = -1;
+	int main_page;
 	if (pte[va/2].valid == 1)
 		main_page = pte[va/2].page_number;
 	else
@@ -127,19 +131,34 @@ int read(int va)
 
 int write(int va, int n)
 {
-	printf("Wrote %i to  %i\n", va, n);
-	int free_page = find_free_page();
-	if(free_page != -1)
-		free_page = handle_pf(va);
-	int free_addr = free_page*2;
-
-	if(va%2==1)
-		main_mem[free_addr+1] = n;
+	printf("Wrote %i to %i\n", va, n);
+	// ^TO BE DELETED
+	int free_page;
+	if(pte[va/2].valid == 1)
+		free_page = pte[va/2].page_number;
 	else
+		free_page = find_free_page();
+	
+	if(free_page == -1)
+		free_page = handle_pf(va);
+	
+	int free_addr = free_page*2;
+	if(va%2==1)
+	{
+		if(pte[va/2].valid != 1)
+			main_mem[free_addr] = disk_mem[va/2];
+		main_mem[free_addr+1] = n;
+	}
+	else
+	{
+		if(pte[va/2].valid != 1)
+			main_mem[free_addr+1] = disk_mem[va/2+1];
 		main_mem[free_addr] = n;
-
+	}
+	
 	pte[va/2].valid = 1;
 	pte[va/2].dirty = 1;
+	printf("FREE PAGE: %i\n", free_page);
 	pte[va/2].page_number = free_page;
 
 	update_order(va/2);
@@ -149,31 +168,17 @@ int write(int va, int n)
 // Returns -1 if no free memory, otherwise returns free main_mem page (Not tested)
 int find_free_page()
 {
-	int page_nums[4] = {-1,-1,-1,-1};
-	int index = 0;
 	int i;
-	for(i=0; i<PT_SIZE; i++)
-	{
-		if(pte[i].valid  == 1)
-		{
-			page_nums[index] = pte[i].page_number;
-			index++;
-		}	
-	}
-
-	if(index < 3)
-	{	
-		int sum = 6; // factorial of PT_SIZE-1
-		for(i=0; i<index; i++)
-			index -= page_nums[i];
-		return sum;
-	}		
+	for(i=0; i<MAIN_MEM_SIZE; i=i+2)
+		if(main_mem[i] == -1 && main_mem[i+1] == -1)
+			return i/2;
 	return -1;
 }
 
 // Returns freed page number in main_mem
 int handle_pf(int va)
 {
+	printf("HANDLE_PF\n");
 	int victim_pte = -1;
 	int disk_page = -1;
 	int main_page = -1;
@@ -323,7 +328,7 @@ int convert_string(char* temp)
 
 void initalize_mem()
 {
-	fill_array(main_mem, MAIN_MEM_SIZE, 0);
+	fill_array(main_mem, MAIN_MEM_SIZE, -1);
 	fill_array(disk_mem, DISK_MEM_SIZE, -1);
 
 	int i;
@@ -335,7 +340,7 @@ void initalize_mem()
 		pte[i].page_number = i;
 	}
 
-	for(i=0; i<MAIN_MEM_SIZE; i++)
+	for(i=0; i<MAIN_PAGE_COUNT; i++)
 		use_order[i] = -1;
 }
 
@@ -344,4 +349,20 @@ void fill_array(int* array, int array_size, int n)
 	int i;
 	for(i = 0; i < array_size; i++)
 		array[i] = n;
+}
+
+void print_all()
+{
+	int i;
+	printf("DISK_MEM\n");
+	for(i=0; i<DISK_MEM_SIZE; i++)
+		printf("%i ", disk_mem[i]);
+	printf("\n");
+	
+	printf("MAIN_MEM\n");
+	for(i=0; i<MAIN_MEM_SIZE; i++)
+		printf("%i ", main_mem[i]);
+	printf("\n");
+
+	showptable();
 }
