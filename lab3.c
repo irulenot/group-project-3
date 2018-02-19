@@ -60,7 +60,7 @@ int main(int argc, const char * argv[])
 
 	// Testing input from file
 	FILE* file;
-	char* filename = "test.txt";
+	char* filename = "t3.txt";
 	file = fopen(filename,"r");
 	char input[50];
 	while(fgets(input, 50, file) != NULL)
@@ -131,7 +131,7 @@ int read(int va)
 
 int write(int va, int n)
 {
-	printf("Wrote %i to %i\n", va, n);
+	printf("Wrote %i to %i\n", n, va);
 	// ^TO BE DELETED
 	int free_page;
 	if(pte[va/2].valid == 1)
