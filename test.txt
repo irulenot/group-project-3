@@ -1,14 +1,8 @@
-write 0 0
+write 5 75
+write 4 127
+read 12
+write 4 191
+write 15 190
+write 15 46
+read 9
 read 0
-write 1 1
-read 0
-read 1
-write 2 2
-read 0
-read 1
-read 2
-write 3 3
-read 0
-read 1
-read 2
-read 3

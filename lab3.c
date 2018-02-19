@@ -60,7 +60,7 @@ int main(int argc, const char * argv[])
 
 	// Testing input from file
 	FILE* file;
-	char* filename = "t2.txt";
+	char* filename = "test.txt";
 	file = fopen(filename,"r");
 	char input[50];
 	while(fgets(input, 50, file) != NULL)
@@ -86,6 +86,7 @@ int main(int argc, const char * argv[])
 	   int* input_p[MAX_INPUTS];
 	   prep_input_p(input_p);
 
+		char input[50] = ... //USER INPUT GOES HERE
 	   parse_input(input, input_p);
 	   running = handle_input(input_p);
 	   free_mem(input_p);
@@ -124,21 +125,21 @@ int read(int va)
 	if(va%2==1)
 		main_addr++;	
 
-	printf("Data in %i is %i\n", va, main_mem[main_addr]); 
+	printf("Address[%i] is %i\n", va, main_mem[main_addr]); 
 	update_order(main_page);
 	return 1;
 }
 
 int write(int va, int n)
 {
-	printf("Wrote %i to %i\n", n, va);
+	printf("Write %i %i\n", va, n);
 	// ^TO BE DELETED
 	int free_page;
 	if(pte[va/2].valid == 1)
 		free_page = pte[va/2].page_number;
 	else
 		free_page = find_free_page();
-	
+
 	if(free_page == -1)
 		free_page = handle_pf(va);
 	
@@ -155,10 +156,10 @@ int write(int va, int n)
 			main_mem[free_addr+1] = disk_mem[va/2+1];
 		main_mem[free_addr] = n;
 	}
+	disk_mem[va] = n;
 	
 	pte[va/2].valid = 1;
 	pte[va/2].dirty = 1;
-	printf("FREE PAGE: %i\n", free_page);
 	pte[va/2].page_number = free_page;
 
 	update_order(va/2);
@@ -169,8 +170,13 @@ int write(int va, int n)
 int find_free_page()
 {
 	int i;
+	int largest_page = -1;
+	for(i=0; i<PT_SIZE; i++)
+		if(pte[i].valid == 1 && pte[i].page_number > largest_page)
+			largest_page = pte[i].page_number;
+
 	for(i=0; i<MAIN_MEM_SIZE; i=i+2)
-		if(main_mem[i] == -1 && main_mem[i+1] == -1)
+		if(main_mem[i] == -1 && main_mem[i+1] == -1 && i>largest_page*2)
 			return i/2;
 	return -1;
 }
@@ -198,11 +204,11 @@ int handle_pf(int va)
 		disk_mem[disk_page*2+1] = main_mem[main_page+1];
 		pte[victim_pte].valid = 0;
 		pte[victim_pte].dirty = 0;
-		pte[victim_pte].page_number = -1;
 	}
 
 	disk_page = va/2;
 	int va_data[2] = {disk_mem[disk_page*2], disk_mem[disk_page*2 + 1]};
+	
 	main_mem[main_page*2] = va_data[0];
 	main_mem[main_page*2 + 1] = va_data[1];
 
